@@ -1,13 +1,15 @@
 package com.saintdan.framework.controller;
 
-import com.saintdan.framework.domain.UserDomain;
 import com.saintdan.framework.po.User;
+import com.saintdan.framework.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,23 +26,39 @@ public class UserController {
 
   @PostMapping
   public Mono<ResponseEntity<User>> create(@RequestBody User user) {
-    return userDomain.create(user)
+    return userRepository.save(user)
         .map(saved -> new ResponseEntity<>(saved, HttpStatus.CREATED));
   }
 
   @GetMapping
   public Flux all() {
-    return userDomain.findAll();
+    return userRepository.findAll();
   }
 
   @GetMapping(value = "/{id}")
-  public Mono<User> get(@PathVariable Long id) {
-    return userDomain.findById(id);
+  public Mono<User> get(@PathVariable String id) {
+    return userRepository.findById(id);
   }
 
-  private final UserDomain userDomain;
+  @PutMapping(value = "/{id}")
+  public Mono<ResponseEntity<User>> update(@PathVariable String id, @RequestBody User user) {
+   return userRepository.findById(id)
+       .flatMap(exist-> {
+         exist.setName(user.getName());
+         return userRepository.save(exist);
+       })
+       .map(saved -> new ResponseEntity<>(saved, HttpStatus.OK))
+       .defaultIfEmpty(ResponseEntity.notFound().build());
+  }
 
-  @Autowired public UserController(UserDomain userDomain) {
-    this.userDomain = userDomain;
+  @DeleteMapping(value = "/{id}")
+  public Mono<ResponseEntity> delete(@PathVariable String id) {
+    return userRepository.deleteById(id).map(r -> ResponseEntity.noContent().build());
+  }
+
+  private final UserRepository userRepository;
+
+  @Autowired public UserController(UserRepository userRepository) {
+    this.userRepository = userRepository;
   }
 }

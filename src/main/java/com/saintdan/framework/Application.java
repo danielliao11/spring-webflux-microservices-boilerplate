@@ -2,7 +2,7 @@ package com.saintdan.framework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 /**
@@ -16,7 +16,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
  * @since JDK1.8
  */
 @SpringBootApplication
-@ComponentScan
+@EnableReactiveMongoRepositories
 @EnableWebFlux
 public class Application {
 

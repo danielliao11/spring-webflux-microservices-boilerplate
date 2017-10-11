@@ -50,22 +50,40 @@ compileTestJava {
 }
 
 ext {
+  springVersion = '5.0.0.RELEASE'
   springBootVersion = '2.0.0.M4'
+  springSecurityVersion = '5.0.0.M5'
+  springOAuth2Version = '2.2.0.RELEASE'
   lombokVersion = '1.16.18'
   commonsTextVersion = '1.1'
   commonsLang3Version = '3.6'
+  commonsBeanutilsVersion = '1.9.3'
   swaggerVersion = '2.6.1'
 }
 
 dependencies {
   // Spring boot dependencies.
-  compile "org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}"
+  compile ("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}") {
+    exclude module: 'spring-boot-starter-tomcat'
+  }
+  compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${springBootVersion}"
   compile "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+
+  compile "org.springframework:spring-webflux:${springVersion}"
+  compile "org.springframework:spring-context:${springVersion}"
+  compile "org.springframework:spring-aspects:${springVersion}"
+  compile "org.springframework:spring-test:${springVersion}"
+//  compile "org.springframework.security:spring-security-webflux:${springSecurityVersion}"
+//  compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
+
+//  // Spring oauth2 dependency.
+//  compile "org.springframework.security.oauth:spring-security-oauth2:${springOAuth2Version}"
 
   // Other dependencies.
   compile "org.projectlombok:lombok:${lombokVersion}"
   compile "org.apache.commons:commons-lang3:${commonsLang3Version}"
   compile "org.apache.commons:commons-text:${commonsTextVersion}"
+  compile "commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}"
 
   //swagger
   compile "io.springfox:springfox-swagger2:${swaggerVersion}"

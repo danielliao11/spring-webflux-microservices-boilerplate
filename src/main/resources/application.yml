@@ -1,5 +1,9 @@
 server:
   address: localhost
   port: 10080
-
-test: 111
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: core
