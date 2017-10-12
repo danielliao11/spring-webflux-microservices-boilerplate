@@ -1,5 +1,6 @@
 package com.saintdan.framework.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.saintdan.framework.enums.ValidFlag;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -20,28 +21,54 @@ import org.springframework.data.annotation.Id;
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"authoritySet", "accounts"}) @ToString(exclude = {"authoritySet", "accounts"})
 public class User {
+
   @Id private String id;
+
   private String name;
+
   private String usr;
+
   private String pwd;
+
   @Builder.Default
+  @JsonIgnore
   private boolean isAccountNonExpiredAlias = true;
+
   @Builder.Default
+  @JsonIgnore
   private boolean isAccountNonLockedAlias = true;
+
   @Builder.Default
+  @JsonIgnore
   private boolean isCredentialsNonExpiredAlias = true;
+
   @Builder.Default
+  @JsonIgnore
   private boolean isEnabledAlias = true;
+
   @Builder.Default
   private ValidFlag validFlag = ValidFlag.VALID;
+
   private String description;
+
   private long lastLoginAt;
+
   private String ip;
-  private long createdAt;
+
+  @Builder.Default
+  private long createdAt = System.currentTimeMillis();
+
   private long createdBy;
-  private long lastModifiedAt;
+
+  @Builder.Default
+  private long lastModifiedAt = System.currentTimeMillis();
+
   private long lastModifiedBy;
+
+  @JsonIgnore
   private Set<Account> accounts;
+
+  @JsonIgnore
   private Set<String> authoritySet;
 
 //  /**

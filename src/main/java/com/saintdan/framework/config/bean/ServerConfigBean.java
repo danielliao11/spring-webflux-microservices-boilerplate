@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
  * @date 09/10/2017
  * @since JDK1.8
  */
-@Component @Data
-@ConfigurationProperties
+@Component
+@Data
+@ConfigurationProperties(prefix = "server")
 public class ServerConfigBean {
 
-  private String test;
+  private String address;
+  private int port;
 }
