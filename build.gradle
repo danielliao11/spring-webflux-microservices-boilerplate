@@ -50,8 +50,7 @@ compileTestJava {
 }
 
 ext {
-  springVersion = '5.0.0.RELEASE'
-  springBootVersion = '2.0.0.M4'
+  springBootVersion = '2.0.0.M5'
   springSecurityVersion = '5.0.0.M5'
   springOAuth2Version = '2.2.0.RELEASE'
   lombokVersion = '1.16.18'
@@ -69,10 +68,6 @@ dependencies {
   compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${springBootVersion}"
   compile "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
 
-  compile "org.springframework:spring-webflux:${springVersion}"
-  compile "org.springframework:spring-context:${springVersion}"
-  compile "org.springframework:spring-aspects:${springVersion}"
-  compile "org.springframework:spring-test:${springVersion}"
 //  compile "org.springframework.security:spring-security-webflux:${springSecurityVersion}"
 //  compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
 
