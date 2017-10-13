@@ -18,8 +18,12 @@ import org.springframework.data.annotation.Id;
  * @date 6/23/15
  * @since JDK1.8
  */
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"authoritySet", "accounts"}) @ToString(exclude = {"authoritySet", "accounts"})
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"authoritySet", "accounts"})
+@ToString(exclude = {"authoritySet", "accounts"})
 public class User {
 
   @Id private String id;

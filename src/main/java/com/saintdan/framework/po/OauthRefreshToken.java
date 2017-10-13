@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
  * @date 26/10/2016
  * @since JDK1.8
  */
-@Data public class OauthRefreshToken {
+@Data
+public class OauthRefreshToken {
+
   @Id private String tokenId;
 }

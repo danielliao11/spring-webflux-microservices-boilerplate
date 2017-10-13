@@ -10,7 +10,9 @@ import org.springframework.data.annotation.Id;
  * @date 26/10/2016
  * @since JDK1.8
  */
-@Data public class OauthAccessToken {
+@Data
+public class OauthAccessToken {
+
   @Id private String tokenId;
   private String userName;
   private String clientId;

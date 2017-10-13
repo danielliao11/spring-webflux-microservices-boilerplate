@@ -12,8 +12,12 @@ import lombok.NoArgsConstructor;
  * @date 10/23/15
  * @since JDK1.8
  */
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Client {
+
   private String id;
   private String clientIdAlias;
   private String resourceIdStr;
@@ -25,9 +29,8 @@ public class Client {
   private String scopeStr;
 
   /**
-   * grant types include
-   * "authorization_code", "password", "assertion", and "refresh_token".
-   * Default description is "authorization_code,refresh_token".
+   * grant types include "authorization_code", "password", "assertion", and "refresh_token". Default
+   * description is "authorization_code,refresh_token".
    */
   private String authorizedGrantTypeStr;
 
@@ -40,28 +43,28 @@ public class Client {
    * Authorities that are granted to the client (comma-separated). Distinct from the authorities
    * granted to the user on behalf of whom the client is acting.
    * <pre>
-   *     For example: USER
+   *     For example: USERS
    * </pre>
    */
   private String authoritiesStr;
 
   /**
-   * The access token validity period in seconds (optional).
-   * If unspecified a global default will be applied by the token services.
+   * The access token validity period in seconds (optional). If unspecified a global default will be
+   * applied by the token services.
    */
   @Builder.Default
   private int accessTokenValiditySecondsAlias = 1800;
 
   /**
-   * The refresh token validity period in seconds (optional).
-   * If unspecified a global default will  be applied by the token services.
+   * The refresh token validity period in seconds (optional). If unspecified a global default will
+   * be applied by the token services.
    */
   @Builder.Default
   private int refreshTokenValiditySecondsAlias = 3600;
 
   /**
-   * Additional information for this client, not needed by the vanilla OAuth protocol but might be useful, for example,
-   * for storing descriptive information.
+   * Additional information for this client, not needed by the vanilla OAuth protocol but might be
+   * useful, for example, for storing descriptive information.
    */
   private String additionalInformationStr;
   private long createdAt;

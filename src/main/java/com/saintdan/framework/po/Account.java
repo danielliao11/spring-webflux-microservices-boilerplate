@@ -14,8 +14,12 @@ import org.springframework.data.annotation.Id;
  * @date 08/02/2017
  * @since JDK1.8
  */
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account {
+
   @Id private String id;
   private String account;
   private AccountSourceType accountSourceType;

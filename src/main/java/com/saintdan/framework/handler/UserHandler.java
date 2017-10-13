@@ -2,13 +2,16 @@ package com.saintdan.framework.handler;
 
 import static com.saintdan.framework.constant.CommonsConstant.ID;
 
+import com.saintdan.framework.filter.ValidateFilter;
 import com.saintdan.framework.param.UserParam;
 import com.saintdan.framework.po.User;
 import com.saintdan.framework.repo.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -24,9 +27,14 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 
   public Mono<ServerResponse> create(ServerRequest request) {
-    return ServerResponse.status(HttpStatus.CREATED).body(request.bodyToMono(UserParam.class)
-        .flatMap(this::param2Po)
-        .flatMap(userRepository::save), User.class);
+    return request.bodyToMono(UserParam.class)
+        .flatMap(param -> validateFilter.validate(param, request.method()) // Validate param.
+            .flatMap(err -> ServerResponse.status(HttpStatus.UNPROCESSABLE_ENTITY) // If validate failed, return err info.
+                .body(BodyInserters.fromObject(err)))
+            .switchIfEmpty(ServerResponse.status(HttpStatus.CREATED) // If validate success, return save result.
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(param2Po(param)
+                    .flatMap(userRepository::save), User.class)));
   }
 
   public Mono<ServerResponse> all(ServerRequest request) {
@@ -34,25 +42,37 @@ public class UserHandler {
   }
 
   public Mono<ServerResponse> get(ServerRequest request) {
-    return ServerResponse.ok().body(userRepository.findById(request.pathVariable(ID)), User.class);
+    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .body(userRepository.findById(request.pathVariable(ID)), User.class)
+        .switchIfEmpty(ServerResponse.notFound().build());
   }
 
   public Mono<ServerResponse> update(ServerRequest request) {
-    return ServerResponse.ok().body(userRepository.findById(request.pathVariable(ID))
-        .flatMap(user -> request.bodyToMono(UserParam.class)
-            .flatMap(param -> param2Po(param, user)
-                .flatMap(userRepository::save))), User.class);
+    return request.bodyToMono(UserParam.class)
+        .flatMap(param -> validateFilter.validate(param, request.method()) // Validate param.
+            .flatMap(err -> ServerResponse
+                .status(HttpStatus.UNPROCESSABLE_ENTITY) // If validate failed, return err info.
+                .body(BodyInserters.fromObject(err)))
+            .switchIfEmpty(userRepository.findById(request.pathVariable(ID)) // Find user by id.
+                .flatMap(user -> param2Po(param, user)
+                    .flatMap(u -> ServerResponse.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body(userRepository.save(u), User.class)))
+                .switchIfEmpty(ServerResponse.notFound().build()))); // If user find failed, return NOT_FOUND
   }
 
   public Mono<ServerResponse> delete(ServerRequest request) {
     return userRepository.deleteById(request.pathVariable(ID))
-        .flatMap(r -> ServerResponse.noContent().build());
+        .flatMap(r -> ServerResponse.noContent().build())
+        .switchIfEmpty(ServerResponse.notFound().build());
   }
 
   private final UserRepository userRepository;
+  private final ValidateFilter validateFilter;
 
-  @Autowired public UserHandler(UserRepository userRepository) {
+  @Autowired public UserHandler(UserRepository userRepository, ValidateFilter validateFilter) {
     this.userRepository = userRepository;
+    this.validateFilter = validateFilter;
   }
 
   private Mono<User> param2Po(UserParam param) {
