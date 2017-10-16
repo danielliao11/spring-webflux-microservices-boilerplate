@@ -27,6 +27,10 @@ public class UserParam {
   @ApiModelProperty(value = "user's name")
   private String name; // user's name
 
+  @ApiModelProperty(value = "role", required = true)
+  @NotNullField(value = HttpMethod.POST, message = "role cannot be null.")
+  private String role;
+
   private String description;
 
 }

@@ -6,6 +6,7 @@ import com.saintdan.framework.filter.ValidateFilter;
 import com.saintdan.framework.param.UserParam;
 import com.saintdan.framework.po.User;
 import com.saintdan.framework.repo.UserRepository;
+import java.security.Principal;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,12 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class UserHandler {
+
+  public Mono<ServerResponse> profile(ServerRequest request) {
+    return request.principal()
+        .map(Principal::getName)
+        .flatMap(usr -> ServerResponse.ok().body(userRepository.findByUsr(usr), User.class));
+  }
 
   public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(UserParam.class)
@@ -80,6 +87,7 @@ public class UserHandler {
         .name(param.getName())
         .usr(param.getUsr())
         .pwd(param.getPwd())
+        .role(param.getRole())
         .description(param.getDescription())
         .build());
   }

@@ -11,4 +11,5 @@ public interface PathConstant {
 
   String USERS = "/users";
   String USER_ID = "/users/{id}";
+  String PROFILE = "/profile";
 }

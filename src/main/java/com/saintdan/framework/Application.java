@@ -1,5 +1,6 @@
 package com.saintdan.framework;
 
+import static com.saintdan.framework.constant.PathConstant.PROFILE;
 import static com.saintdan.framework.constant.PathConstant.USERS;
 import static com.saintdan.framework.constant.PathConstant.USER_ID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -43,7 +44,8 @@ public class Application {
         .andRoute(GET(USER_ID).and(accept(APPLICATION_JSON_UTF8)), userHandler::get)
         .andRoute(POST(USERS).and(accept(APPLICATION_JSON_UTF8)), userHandler::create)
         .andRoute(PUT(USER_ID).and(accept(APPLICATION_JSON_UTF8)), userHandler::update)
-        .andRoute(DELETE(USER_ID).and(accept(APPLICATION_JSON_UTF8)), userHandler::delete);
+        .andRoute(DELETE(USER_ID).and(accept(APPLICATION_JSON_UTF8)), userHandler::delete)
+        .andRoute(GET(PROFILE), userHandler::profile);
   }
 
   private final UserHandler userHandler;

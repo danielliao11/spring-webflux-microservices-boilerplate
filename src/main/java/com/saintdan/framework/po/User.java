@@ -1,8 +1,10 @@
 package com.saintdan.framework.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.saintdan.framework.enums.ValidFlag;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Authorized users, provide for spring security oauth2.
@@ -32,6 +37,7 @@ public class User {
 
   private String usr;
 
+  @JsonIgnore
   private String pwd;
 
   @Builder.Default
@@ -50,9 +56,6 @@ public class User {
   @JsonIgnore
   private boolean isEnabledAlias = true;
 
-  @Builder.Default
-  private ValidFlag validFlag = ValidFlag.VALID;
-
   private String description;
 
   private long lastLoginAt;
@@ -69,45 +72,22 @@ public class User {
 
   private long lastModifiedBy;
 
+  private String role;
+
   @JsonIgnore
   private Set<Account> accounts;
 
   @JsonIgnore
   private Set<String> authoritySet;
 
-//  /**
-//   * Get the authorities.
-//   *
-//   * @return GrantedAuthorities
-//   */
-//  @Override public Collection<? extends GrantedAuthority> getAuthorities() {
-//    Collection<GrantedAuthority> authorities = new ArrayList<>();
-//    getAuthoritySet()
-//        .forEach(authority -> authorities.add(new SimpleGrantedAuthority(authority)));
-//    return authorities;
-//  }
-//
-//  @Override public String getUsername() {
-//    return getUsr();
-//  }
-//
-//  @Override public String getPassword() {
-//    return getPwd();
-//  }
-//
-//  @Override public boolean isAccountNonExpired() {
-//    return isAccountNonExpiredAlias();
-//  }
-//
-//  @Override public boolean isAccountNonLocked() {
-//    return isAccountNonLockedAlias();
-//  }
-//
-//  @Override public boolean isCredentialsNonExpired() {
-//    return isCredentialsNonExpiredAlias();
-//  }
-//
-//  @Override public boolean isEnabled() {
-//    return isEnabledAlias();
-//  }
+  /**
+   * Get the authorities.
+   *
+   * @return GrantedAuthorities
+   */
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return CollectionUtils.isEmpty(authoritySet) ? new HashSet<>() : authoritySet.stream()
+        .map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+  }
+
 }

@@ -1,6 +1,7 @@
 server:
   address: localhost
   port: 10080
+
 spring:
   data:
     mongodb:
