@@ -1,3 +1,3 @@
 # Spring Webflux Microservices Boilerplate
 
-building...
+[Version history is here. ;)](VERSION_HISTORY.md)
