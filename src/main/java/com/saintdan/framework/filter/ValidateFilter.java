@@ -1,5 +1,6 @@
 package com.saintdan.framework.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saintdan.framework.annotation.NotNullField;
 import com.saintdan.framework.annotation.SizeField;
@@ -17,6 +18,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -51,7 +53,11 @@ public class ValidateFilter implements WebFilter {
           if (vo == null) {
             return chain.filter(tmpExchange);
           }
-          exchange.getResponse().setStatusCode(HttpStatus.UNPROCESSABLE_ENTITY);
+          try {
+            exchange.getResponse().setStatusCode(HttpStatus.UNPROCESSABLE_ENTITY);
+            return exchange.getResponse().writeWith(Flux.just(exchange.getResponse().bufferFactory()
+                .wrap(mapper.writeValueAsBytes(vo))));
+          } catch (JsonProcessingException ignored) {}
           return Mono.empty();
         });
   }
@@ -77,8 +83,7 @@ public class ValidateFilter implements WebFilter {
           return ErrorVO.builder().error(ErrorType.SYS0002.name())
               .error_description(notNullField.message()).build();
         }
-      } catch (IllegalAccessException ignore) {
-      }
+      } catch (IllegalAccessException ignore) { }
       if (field.isAnnotationPresent(SizeField.class)) {
         SizeField size = field.getAnnotation(SizeField.class);
         try {
@@ -88,8 +93,7 @@ public class ValidateFilter implements WebFilter {
             return ErrorVO.builder().error(ErrorType.SYS0002.name())
                 .error_description(notNullField.message()).build();
           }
-        } catch (IllegalAccessException ignore) {
-        }
+        } catch (IllegalAccessException ignore) { }
       }
     }
     return null;
