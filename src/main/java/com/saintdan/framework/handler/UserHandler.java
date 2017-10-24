@@ -2,7 +2,6 @@ package com.saintdan.framework.handler;
 
 import static com.saintdan.framework.constant.CommonsConstant.ID;
 
-import com.saintdan.framework.filter.ValidateFilter;
 import com.saintdan.framework.param.UserParam;
 import com.saintdan.framework.po.User;
 import com.saintdan.framework.repo.UserRepository;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -42,15 +40,11 @@ public class UserHandler {
 
   @Transactional public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(UserParam.class)
-        .flatMap(param -> validateFilter.validate(param, request.method()) // Validate param.
-            .flatMap(err -> ServerResponse
-                .status(HttpStatus.UNPROCESSABLE_ENTITY) // If validate failed, return err info.
-                .body(BodyInserters.fromObject(err)))
-            .switchIfEmpty(ServerResponse
-                .status(HttpStatus.CREATED) // If validate success, return save result.
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .body(param2Po(param)
-                    .flatMap(userRepository::save), User.class)));
+        .flatMap(param -> ServerResponse
+            .status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .body(param2Po(param)
+                .flatMap(userRepository::save), User.class));
   }
 
   public Mono<ServerResponse> all(ServerRequest request) {
@@ -65,17 +59,13 @@ public class UserHandler {
 
   @Transactional public Mono<ServerResponse> update(ServerRequest request) {
     return request.bodyToMono(UserParam.class)
-        .flatMap(param -> validateFilter.validate(param, request.method()) // Validate param.
-            .flatMap(err -> ServerResponse
-                .status(HttpStatus.UNPROCESSABLE_ENTITY) // If validate failed, return err info.
-                .body(BodyInserters.fromObject(err)))
-            .switchIfEmpty(userRepository.findById(request.pathVariable(ID)) // Find user by id.
-                .flatMap(user -> param2Po(param, user)
-                    .flatMap(u -> ServerResponse.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .body(userRepository.save(u), User.class)))
-                .switchIfEmpty(
-                    ServerResponse.notFound().build()))); // If user find failed, return NOT_FOUND
+        .flatMap(param -> userRepository.findById(request.pathVariable(ID)) // Find user by id.
+            .flatMap(user -> param2Po(param, user)
+                .flatMap(u -> ServerResponse.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .body(userRepository.save(u), User.class)))
+            .switchIfEmpty(
+                ServerResponse.notFound().build())); // If user find failed, return NOT_FOUND
   }
 
   @Transactional public Mono<ServerResponse> delete(ServerRequest request) {
@@ -89,11 +79,9 @@ public class UserHandler {
   // --------------------------
 
   private final UserRepository userRepository;
-  private final ValidateFilter validateFilter;
 
-  @Autowired public UserHandler(UserRepository userRepository, ValidateFilter validateFilter) {
+  @Autowired public UserHandler(UserRepository userRepository) {
     this.userRepository = userRepository;
-    this.validateFilter = validateFilter;
   }
 
   private Mono<User> param2Po(UserParam param) {
