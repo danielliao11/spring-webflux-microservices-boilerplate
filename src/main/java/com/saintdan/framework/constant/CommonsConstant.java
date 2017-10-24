@@ -10,16 +10,11 @@ package com.saintdan.framework.constant;
 public interface CommonsConstant {
 
   String ID = "id";
-
   String NAME = "name";
-
   String BLANK = "";
-
   String COMMA = ",";
-
   String COLON = ":";
-
   String SLASH = "/";
-
   String ZERO = "0";
+  String UNDERLINE = "_";
 }

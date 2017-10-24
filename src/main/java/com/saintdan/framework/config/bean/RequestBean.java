@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author <a href="http://github.com/saintdan">Liao Yifan</a>
- * @date 09/10/2017
+ * @date 22/10/2017
  * @since JDK1.8
  */
 @Component
 @Data
-@ConfigurationProperties(prefix = "server")
-public class ServerConfigBean {
+@ConfigurationProperties(prefix = "request")
+public class RequestBean {
 
-  private String address;
-  private int port;
+  private long range;
+  private int count;
 }

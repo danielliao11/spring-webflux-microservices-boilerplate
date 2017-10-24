@@ -14,6 +14,5 @@ package com.saintdan.framework.enums;
 public interface IntentStateWithCodeAndDescription {
 
   int code();
-
   String description();
 }

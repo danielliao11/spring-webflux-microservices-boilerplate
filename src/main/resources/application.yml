@@ -1,6 +1,11 @@
+request:
+  range: 10000
+  count: 3
+
 server:
   address: localhost
   port: 10080
+
 spring:
   data:
     mongodb:
