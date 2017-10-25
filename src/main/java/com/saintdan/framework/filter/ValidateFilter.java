@@ -5,13 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saintdan.framework.annotation.NotNullField;
 import com.saintdan.framework.annotation.SizeField;
 import com.saintdan.framework.enums.ErrorType;
-import com.saintdan.framework.param.UserParam;
+import com.saintdan.framework.enums.ResourceUri;
 import com.saintdan.framework.vo.ErrorVO;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -31,35 +36,43 @@ import reactor.core.publisher.Mono;
 @Component
 public class ValidateFilter implements WebFilter {
 
-  @Override public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+  @Override
+  @SuppressWarnings("unchecked")
+  public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     ServerHttpRequest request = exchange.getRequest();
     ServerWebExchange tmpExchange = exchange.mutate().request(request).build();
     ObjectMapper mapper = new ObjectMapper();
-    return request.getBody()
-        .filter(a -> request.getMethod() != null
-            && (request.getMethod().matches(HttpMethod.POST.name())
-            || request.getMethod().matches(HttpMethod.PUT.name())
-            || request.getMethod().matches(HttpMethod.PATCH.name())))
-        .next()
+    if (request.getMethod() == null) {
+      exchange.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+      return Mono.empty();
+    }
+    return matches(request.getMethod().name())
+        .flatMap(b -> request.getBody().next())
         .flatMap(dataBuffer -> {
           try {
-            return Mono.just(mapper.readValue(dataBuffer.asInputStream(), UserParam.class));
+            return Mono.just(mapper.readValue(dataBuffer.asInputStream(),
+                ResourceUri.resolve(request.getURI().getPath()).clazz()));
           } catch (IOException e) {
-            return Mono.just(new RuntimeException(e));
+            return Mono.just(e);
           }
         })
         .flatMap(o -> {
           ErrorVO vo = validate(o, request.getMethod());
-          if (vo == null) {
-            return chain.filter(tmpExchange);
-          }
-          try {
-            exchange.getResponse().setStatusCode(HttpStatus.UNPROCESSABLE_ENTITY);
-            return exchange.getResponse().writeWith(Flux.just(exchange.getResponse().bufferFactory()
-                .wrap(mapper.writeValueAsBytes(vo))));
-          } catch (JsonProcessingException ignored) {}
-          return Mono.empty();
-        });
+          if (vo != null) {
+              try {
+                exchange.getResponse().setStatusCode(HttpStatus.UNPROCESSABLE_ENTITY);
+                exchange.getResponse().getHeaders().put(HttpHeaders.CONTENT_TYPE,
+                    Collections.singletonList(MediaType.APPLICATION_JSON_UTF8_VALUE));
+                return exchange.getResponse()
+                    .writeWith(Flux.just(exchange.getResponse().bufferFactory()
+                        .wrap(mapper.writeValueAsBytes(vo))));
+              } catch (JsonProcessingException e) {
+                Mono.just(e);
+              }
+            }
+            return Mono.empty();
+        })
+        .switchIfEmpty(chain.filter(tmpExchange));
   }
 
   /**
@@ -69,7 +82,7 @@ public class ValidateFilter implements WebFilter {
    * @param method {@link HttpMethod}
    * @return error
    */
-  public ErrorVO validate(Object param, HttpMethod method) {
+  private ErrorVO validate(Object param, HttpMethod method) {
     Field[] fields = param.getClass().getDeclaredFields();
     for (Field field : fields) {
       if (field == null || !field.isAnnotationPresent(NotNullField.class)) {
@@ -83,7 +96,8 @@ public class ValidateFilter implements WebFilter {
           return ErrorVO.builder().error(ErrorType.SYS0002.name())
               .error_description(notNullField.message()).build();
         }
-      } catch (IllegalAccessException ignore) { }
+      } catch (IllegalAccessException ignore) {
+      }
       if (field.isAnnotationPresent(SizeField.class)) {
         SizeField size = field.getAnnotation(SizeField.class);
         try {
@@ -93,9 +107,22 @@ public class ValidateFilter implements WebFilter {
             return ErrorVO.builder().error(ErrorType.SYS0002.name())
                 .error_description(notNullField.message()).build();
           }
-        } catch (IllegalAccessException ignore) { }
+        } catch (IllegalAccessException ignore) {
+        }
       }
     }
     return null;
+  }
+
+  private static final Map<String, String> mappings = new HashMap<>(3);
+
+  static {
+    mappings.put(HttpMethod.POST.name(), HttpMethod.POST.name());
+    mappings.put(HttpMethod.PUT.name(), HttpMethod.PUT.name());
+    mappings.put(HttpMethod.PATCH.name(), HttpMethod.PATCH.name());
+  }
+
+  private Mono<Boolean> matches(String method) {
+    return Mono.just(mappings.containsKey(method));
   }
 }

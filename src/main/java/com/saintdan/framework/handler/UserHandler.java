@@ -40,11 +40,14 @@ public class UserHandler {
 
   @Transactional public Mono<ServerResponse> create(ServerRequest request) {
     return request.bodyToMono(UserParam.class)
-        .flatMap(param -> ServerResponse
-            .status(HttpStatus.CREATED)
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .body(param2Po(param)
-                .flatMap(userRepository::save), User.class));
+        .flatMap(param -> {
+          return ServerResponse
+              .status(HttpStatus.CREATED)
+              .contentType(MediaType.APPLICATION_JSON_UTF8)
+              .body(param2Po(param)
+                  .flatMap(userRepository::save), User.class)
+              .switchIfEmpty(Mono.empty());
+        });
   }
 
   public Mono<ServerResponse> all(ServerRequest request) {
