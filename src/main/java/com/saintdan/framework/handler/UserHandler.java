@@ -44,7 +44,8 @@ public class UserHandler {
             .status(HttpStatus.CREATED)
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .body(param2Po(param)
-                .flatMap(userRepository::save), User.class));
+                .flatMap(userRepository::save), User.class)
+            .switchIfEmpty(Mono.empty()));
   }
 
   public Mono<ServerResponse> all(ServerRequest request) {

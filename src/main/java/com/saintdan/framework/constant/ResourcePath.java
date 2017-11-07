@@ -7,7 +7,7 @@ package com.saintdan.framework.constant;
  * @date 12/10/2017
  * @since JDK1.8
  */
-public interface PathConstant {
+public interface ResourcePath {
 
   String USERS = "/users";
   String USER_ID = "/users/{id}";

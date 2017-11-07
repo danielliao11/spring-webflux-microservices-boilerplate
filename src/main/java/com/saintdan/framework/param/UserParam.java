@@ -3,7 +3,10 @@ package com.saintdan.framework.param;
 import com.saintdan.framework.annotation.NotNullField;
 import com.saintdan.framework.annotation.SizeField;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpMethod;
 
 /**
@@ -12,6 +15,9 @@ import org.springframework.http.HttpMethod;
  * @since JDK1.8
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserParam {
 
   @ApiModelProperty(value = "username", required = true, notes = "usr must greater than or equal to 4 and less than or equal to 50.")
