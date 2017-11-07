@@ -58,7 +58,7 @@ public class Application {
     return WebHttpHandlerBuilder
         .webHandler((WebHandler) toHttpHandler(routing()))
         .filter(limitFilter)
-        .filter(validateFilter)
+//        .filter(validateFilter)
         .build();
   }
 

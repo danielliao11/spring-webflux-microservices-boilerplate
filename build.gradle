@@ -7,79 +7,64 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 buildscript {
   repositories {
-    // If you live in China. You can use ali's repository.
-    maven {
-      url 'http://maven.aliyun.com/nexus/content/groups/public/'
-    }
+    mavenLocal()
     maven {
       url 'https://repo.spring.io/plugins-release'
     }
-    mavenCentral()
-    jcenter()
   }
   dependencies {
-    classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M4')
+    classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M5')
   }
 }
 
-allprojects {
-  repositories {
-    // If you live in China. You can use ali's repository.
-    maven {
-      url 'http://maven.aliyun.com/nexus/content/groups/public/'
-    }
-    maven {
-      url 'https://repo.spring.io/plugins-release'
-    }
-    mavenCentral()
-    jcenter()
+repositories {
+  mavenLocal()
+  // If you live in China. You can use ali's repository.
+  maven {
+    url 'http://maven.aliyun.com/nexus/content/groups/public/'
   }
-}
-
-compileJava {
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
-}
-
-compileTestJava {
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  maven {
+    url 'https://repo.spring.io/plugins-release'
+  }
+  mavenCentral()
+  jcenter()
 }
 
 ext {
-  springBootVersion = '2.0.0.M5'
-  springSecurityVersion = '5.0.0.M5'
-  lombokVersion = '1.16.18'
-  commonsTextVersion = '1.1'
-  commonsLang3Version = '3.6'
-  commonsBeanutilsVersion = '1.9.3'
-  swaggerVersion = '2.6.1'
+  spring_boot_version = '2.0.0.M5'
+  spring_security_version = '5.0.0.M5'
+  lombok_version = '1.16.18'
+  commons_text_version = '1.1'
+  commons_lang3_version = '3.6'
+  commons_beanutils_version = '1.9.3'
+  swagger_version = '2.6.1'
 }
 
 dependencies {
   // Spring boot dependencies.
-  compile ("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}") {
+  compile ("org.springframework.boot:spring-boot-starter-webflux:$spring_boot_version") {
     exclude module: 'spring-boot-starter-tomcat'
   }
-  compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:${springBootVersion}"
-  compile "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+  compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:$spring_boot_version"
+  compile "org.springframework.boot:spring-boot-devtools:$spring_boot_version"
 
-  compile "org.springframework.security:spring-security-webflux:${springSecurityVersion}"
-  compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
+  compile "org.springframework.security:spring-security-webflux:$spring_security_version"
+  compile "org.springframework.security:spring-security-config:$spring_security_version"
 
   // Other dependencies.
-  compile "org.projectlombok:lombok:${lombokVersion}"
-  compile "org.apache.commons:commons-lang3:${commonsLang3Version}"
-  compile "org.apache.commons:commons-text:${commonsTextVersion}"
-  compile "commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}"
+  compile "org.projectlombok:lombok:$lombok_version"
+  compile "org.apache.commons:commons-lang3:$commons_lang3_version"
+  compile "org.apache.commons:commons-text:$commons_text_version"
+  compile "commons-beanutils:commons-beanutils:$commons_beanutils_version"
 
   //swagger
-  compile "io.springfox:springfox-swagger2:${swaggerVersion}"
-  compile "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+  compile "io.springfox:springfox-swagger2:$swagger_version"
+  compile "io.springfox:springfox-swagger-ui:$swagger_version"
 
   // Test dependencies.
-  testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+  testCompile "org.springframework.boot:spring-boot-starter-test:$spring_boot_version"
 }
