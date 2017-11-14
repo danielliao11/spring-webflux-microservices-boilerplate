@@ -1,8 +1,8 @@
 package com.saintdan.framework;
 
-import static com.saintdan.framework.constant.PathConstant.PROFILE;
-import static com.saintdan.framework.constant.PathConstant.USERS;
-import static com.saintdan.framework.constant.PathConstant.USER_ID;
+import static com.saintdan.framework.constant.ResourcePath.PROFILE;
+import static com.saintdan.framework.constant.ResourcePath.USERS;
+import static com.saintdan.framework.constant.ResourcePath.USER_ID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
@@ -58,7 +58,7 @@ public class Application {
     return WebHttpHandlerBuilder
         .webHandler((WebHandler) toHttpHandler(routing()))
         .filter(limitFilter)
-        .filter(validateFilter)
+//        .filter(validateFilter)
         .build();
   }
 
