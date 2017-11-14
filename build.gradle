@@ -10,45 +10,36 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 buildscript {
+  ext {
+    spring_boot_version = '2.0.0.M6'
+    spring_security_version = '5.0.0.M5'
+    lombok_version = '1.16.18'
+    commons_text_version = '1.1'
+    commons_lang3_version = '3.6'
+    commons_beanutils_version = '1.9.3'
+    swagger_version = '2.6.1'
+  }
   repositories {
     mavenLocal()
-    maven {
-      url 'https://repo.spring.io/plugins-release'
-    }
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    mavenCentral()
+    maven { url "https://repo.spring.io/plugins-release" }
   }
   dependencies {
-    classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M5')
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
   }
 }
 
 repositories {
   mavenLocal()
-  // If you live in China. You can use ali's repository.
-  maven {
-    url 'http://maven.aliyun.com/nexus/content/groups/public/'
-  }
-  maven {
-    url 'https://repo.spring.io/plugins-release'
-  }
+  maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
   mavenCentral()
-  jcenter()
-}
-
-ext {
-  spring_boot_version = '2.0.0.M5'
-  spring_security_version = '5.0.0.M5'
-  lombok_version = '1.16.18'
-  commons_text_version = '1.1'
-  commons_lang3_version = '3.6'
-  commons_beanutils_version = '1.9.3'
-  swagger_version = '2.6.1'
+  maven { url "https://repo.spring.io/plugins-release" }
 }
 
 dependencies {
   // Spring boot dependencies.
-  compile ("org.springframework.boot:spring-boot-starter-webflux:$spring_boot_version") {
-    exclude module: 'spring-boot-starter-tomcat'
-  }
+  compile "org.springframework.boot:spring-boot-starter-webflux:$spring_boot_version"
   compile "org.springframework.boot:spring-boot-starter-data-mongodb-reactive:$spring_boot_version"
   compile "org.springframework.boot:spring-boot-devtools:$spring_boot_version"
 
